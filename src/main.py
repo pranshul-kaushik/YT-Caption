@@ -2,9 +2,9 @@ from utils.constants import DATASET_PATH, DOCUMENTS_PATH
 from scripts.DocumentBuilder import build_document
 from scripts.Scraper import get_channel_video_ids, download_captions
 
+handle_name = ""
 
-channel_id = 'UCFroPOUSXXZhO75WHSVpm6w'   #  Free Code Camp Youtube
-video_ids = get_channel_video_ids(channel_id)
+video_ids = get_channel_video_ids(handle_name)
 
 download_captions(video_ids, DATASET_PATH)
 

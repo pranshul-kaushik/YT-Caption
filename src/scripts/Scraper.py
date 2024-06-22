@@ -3,14 +3,39 @@ import os
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from tqdm import tqdm
+from utils.constants import CHANNEL_ID_URL
 import json
+import requests
 
 load_dotenv()
 
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
+def get_channel_id(handle_name):
+    try:
+        response = requests.get(CHANNEL_ID_URL.format(handle_name=handle_name))
+        response.raise_for_status()  # Raise an exception for unsuccessful requests
 
-def get_channel_video_ids(channel_id):
+        # Parse the JSON response
+        data = json.loads(response.text)
+
+        # Check if there are any items
+        if not data["items"]:
+            print("No Channel found in the response")
+            raise "No Channel Found!"
+        else:
+            # Get the first item and extract the id
+            first_item = data["items"][0]
+            channel_id = first_item["id"]
+
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        raise e
+    return channel_id
+
+
+def get_channel_video_ids(handle_name):
+    channel_id = get_channel_id(handle_name)
     youtube = build('youtube', 'v3', developerKey=GOOGLE_API_KEY)
     
     # Get the uploads playlist ID for the channel
@@ -65,10 +90,3 @@ def save_captions_to_file(video_id, transcript):
     with open(filename, 'w', encoding='utf-8') as file:
         for entry in transcript:
             file.write(f"{entry['text']} ")
-
-if __name__ == "__main__":
-    channel_id = 'UC8butISFwT-Wl7EV0hUK0BQ'
-    
-    video_ids = get_channel_video_ids(channel_id, "./dataset/")
-
-    download_captions(video_ids)
