@@ -16,7 +16,11 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 def get_channel_id(handle_name):
     try:
-        response = requests.get(CHANNEL_ID_URL.format(handle_name=handle_name))
+        response = requests.get(
+            CHANNEL_ID_URL.format(
+                handle_name=handle_name, GOOGLE_API_KEY=GOOGLE_API_KEY
+            )
+        )
         response.raise_for_status()  # Raise an exception for unsuccessful requests
 
         # Parse the JSON response
@@ -37,7 +41,7 @@ def get_channel_id(handle_name):
     return channel_id
 
 
-def get_channel_video_ids(handle_name):
+def get_channel_video_ids(handle_name, num_videos):
     channel_id = get_channel_id(handle_name)
     youtube = build("youtube", "v3", developerKey=GOOGLE_API_KEY)
 
@@ -60,7 +64,7 @@ def get_channel_video_ids(handle_name):
             .list(
                 part="contentDetails",
                 playlistId=uploads_playlist_id,
-                maxResults=50,
+                maxResults=30,
                 pageToken=next_page_token,
             )
             .execute()
@@ -69,7 +73,7 @@ def get_channel_video_ids(handle_name):
         playlist_items.extend(playlist_response["items"])
         next_page_token = playlist_response.get("nextPageToken")
 
-        if not next_page_token:
+        if not next_page_token or len(playlist_items) >= num_videos:
             break
 
     video_ids = [item["contentDetails"]["videoId"] for item in playlist_items]
