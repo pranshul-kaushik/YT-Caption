@@ -20,8 +20,14 @@ def main():
     if st.button("Download Captions"):
         if handle_name:
             video_ids = get_channel_video_ids(handle_name, num_videos)
-            download_captions(video_ids, DATASET_PATH)
-            build_document(DATASET_PATH, DOCUMENTS_PATH)
+            caption_paths = download_captions(handle_name, video_ids, DATASET_PATH)
+            caption_document_path = build_document(
+                handle_name, caption_paths, DOCUMENTS_PATH
+            )
+
+            # TODO: Save all the data to S3 and then delete the locally dowloaded files
+            # ...
+
             st.success(f"Captions downloaded for channel {handle_name}")
         else:
             st.error("Please enter a YouTube handle")

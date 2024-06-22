@@ -14,12 +14,10 @@ text_splitter = CharacterTextSplitter.from_tiktoken_encoder(
 )
 
 
-def build_document(DATASET_PATH, DOCUMENTS_PATH):
+def build_document(handle_name, caption_paths, DOCUMENTS_PATH):
     try:
-        paths = glob(DATASET_PATH + "*.jsonl")
-
         documents = []
-        for each_path in tqdm(paths):
+        for each_path in tqdm(caption_paths):
             video_id = os.path.basename(each_path).replace("_captions.jsonl", "")
             with open(each_path, "r") as video_caption_file:
                 for line in video_caption_file:
@@ -42,8 +40,10 @@ def build_document(DATASET_PATH, DOCUMENTS_PATH):
                         new_doc = Document(page_content=chunk, metadata=metadata)
                         documents.append(new_doc)
 
-        save_docs_to_jsonl(documents, DOCUMENTS_PATH)
-        return True
+        caption_document_path = save_docs_to_jsonl(
+            documents, handle_name, DOCUMENTS_PATH
+        )
+        return caption_document_path
     except Exception as e:
         print(e)
-        return False
+        raise e

@@ -1,5 +1,6 @@
 import json
 import os
+from uuid import uuid4
 
 import requests
 from dotenv import load_dotenv
@@ -87,17 +88,22 @@ def list_of_dicts_to_jsonl(list_of_dicts, output_file):
             file.write(json_line + "\n")
 
 
-def download_captions(video_ids, DATASET_PATH):
-    for video_id in tqdm(video_ids):
-        if not os.path.isfile(f"{DATASET_PATH}{video_id}_captions.jsonl"):
-            try:
-                transcript = YouTubeTranscriptApi.get_transcript(video_id)
-                list_of_dicts_to_jsonl(
-                    transcript, f"{DATASET_PATH}{video_id}_captions.jsonl"
-                )
+def download_captions(handle_name, video_ids, DATASET_PATH):
+    caption_paths = []
 
-            except Exception as e:
-                print(f"An error occurred for video {video_id}: {str(e)}")
+    for video_id in tqdm(video_ids):
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            file_path = (
+                f"{DATASET_PATH}{handle_name}_{video_id}_{uuid4().hex}_captions.jsonl"
+            )
+            list_of_dicts_to_jsonl(transcript, file_path)
+            caption_paths.append(file_path)
+
+        except Exception as e:
+            print(f"An error occurred for video {video_id}: {str(e)}")
+
+    return caption_paths
 
 
 def save_captions_to_file(video_id, transcript):
