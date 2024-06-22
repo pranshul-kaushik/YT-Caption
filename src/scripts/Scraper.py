@@ -7,11 +7,11 @@ import json
 
 load_dotenv()
 
-api_key = os.getenv('api_key')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 
 def get_channel_video_ids(channel_id):
-    youtube = build('youtube', 'v3', developerKey=api_key)
+    youtube = build('youtube', 'v3', developerKey=GOOGLE_API_KEY)
     
     # Get the uploads playlist ID for the channel
     playlist_response = youtube.channels().list(
