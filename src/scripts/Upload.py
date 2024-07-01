@@ -19,6 +19,4 @@ def upload_document(uuid, local_file_path):
 
 
 def dowload_document(uuid, local_file_path):
-    S3.download_folder_from_s3(
-        f"{uuid}/{os.path.basename(local_file_path)}", local_file_path
-    )
+    S3.download_s3_file(local_file_path, f"{uuid}/{os.path.basename(local_file_path)}")
