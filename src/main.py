@@ -12,7 +12,6 @@ def main():
     """
     This function defines the Streamlit app logic
     """
-
     st.title("YouTube Caption Downloader")
     handle_name = st.text_input("Enter YouTube Channel Handle")
     num_videos = st.number_input(
