@@ -1,8 +1,10 @@
 boto3==1.18.62
+Flask==3.0.3
 google-api-python-client==2.112.0 
 langchain==0.1.4 
 python-dotenv==1.0.0
 tiktoken==0.5.2
 streamlit==1.36.0
 tqdm==4.66.1
+watchdog==4.0.1
 youtube-transcript-api==0.6.2
